@@ -2,8 +2,6 @@ package eventrepository
 
 import (
 	"errors"
-
-	"sloan.com/service/internal/event"
 )
 
 var (
@@ -11,18 +9,27 @@ var (
 	ErrRepoNotFound     = errors.New("repo not found")
 )
 
-type EventRepository interface {
-	GetResource(name string) ([]*event.Event, error)
+var (
+	defaultRepo = "defaultRepo"
+)
+
+type Resource interface {
+	GetContentType() string
+	GetData() []byte
+}
+
+type Repository interface {
+	GetResource(name string) (Resource, error)
 	Name() string
 }
 
 type RepositoryManager struct {
-	repositories map[string]*EventRepository
+	repositories map[string]*Repository
 }
 
-func NewRepositoryManager(repositories ...EventRepository) *RepositoryManager {
+func NewRepositoryManager(repositories ...Repository) *RepositoryManager {
 	r := RepositoryManager{
-		repositories: map[string]*EventRepository{},
+		repositories: map[string]*Repository{},
 	}
 	for _, val := range repositories {
 		if val != nil {
@@ -32,7 +39,7 @@ func NewRepositoryManager(repositories ...EventRepository) *RepositoryManager {
 	return &r
 }
 
-func (rm *RepositoryManager) GetRepo(name string) (*EventRepository, error) {
+func (rm *RepositoryManager) GetRepo(name string) (*Repository, error) {
 	if name == "" {
 		name = defaultRepo
 	}

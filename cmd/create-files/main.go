@@ -1,22 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"time"
 
+	"sloan.com/service/internal/constants"
 	"sloan.com/service/internal/event"
 	"sloan.com/service/internal/platform/utility"
 )
 
 func main() {
-	argsWithoutProg := os.Args[1:]
-
-	if len(argsWithoutProg) > 1 {
-		fmt.Printf("\ninvalid args\n")
-		os.Exit(1)
-	}
-
 	evts := []*event.Event{
 		&event.Event{
 			Id:   "foo",
@@ -50,5 +42,5 @@ func main() {
 		},
 	}
 
-	utility.DumpEventsToFile(evts, argsWithoutProg[0])
+	utility.DumpEventsToFile(evts, constants.TmpDir)
 }

@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"sloan.com/service/cmd/event-service-api/handlers"
+	"sloan.com/service/internal/constants"
 )
 
 func main() {
@@ -23,25 +24,24 @@ func run() error {
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
 	api := http.Server{
-		Addr:    "0.0.0.0:3005",
+		Addr:    fmt.Sprintf("%s:%s", "0.0.0.0", constants.Port),
 		Handler: handlers.API(),
 		// read timeout?
 		// write timeout?
 	}
 
 	go func() {
-		api.ListenAndServe() // todo handle errors
+		api.ListenAndServe()
 	}()
 
 	select {
-	case <-shutdown: // todo care about the signal
+	case <-shutdown:
 		// shut it down
-		fmt.Printf("\nshutting down\n")
+		fmt.Printf("\n<===== shutting down =====>\n")
 		ctx, cancel := context.WithTimeout(context.Background(), 5000)
 		defer cancel()
-		err := api.Shutdown(ctx) // give it a context?
+		err := api.Shutdown(ctx)
 		if err != nil {
-			// whaterver
 			err = api.Close()
 		}
 	}

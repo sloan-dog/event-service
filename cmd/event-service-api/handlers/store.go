@@ -2,16 +2,11 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"sloan.com/service/internal/event"
 	eventrepository "sloan.com/service/internal/event-repository"
 )
 
 type Store struct {
 	repoManager *eventrepository.RepositoryManager
-}
-
-type StoreGetResourceResponse struct {
-	Events []*event.Event `json: "events"`
 }
 
 func (r *Store) GetResource(c *gin.Context) {
@@ -22,14 +17,14 @@ func (r *Store) GetResource(c *gin.Context) {
 		// handle not found
 		switch err {
 		case eventrepository.ErrRepoNotFound:
-			c.JSON(404, nil)
+			c.AbortWithStatus(404)
 			break
 		default:
 			c.AbortWithError(500, err)
 			break
 		}
 	}
-	evts, err := (*repo).GetResource(name)
+	resource, err := (*repo).GetResource(name)
 	if err != nil {
 		// handle
 		switch err {
@@ -41,7 +36,7 @@ func (r *Store) GetResource(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(200, &StoreGetResourceResponse{
-		Events: evts,
-	})
+	cType := resource.GetContentType()
+	data := resource.GetData()
+	c.Data(200, cType, data)
 }
