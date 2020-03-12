@@ -14,7 +14,7 @@ cmd/
         main.go // actually starts and runs service
     internal/
         constants/
-            constants.go // currently just the location of file
+            constants.go // currently just the location of file, and the port the server runs on
         event/
             event.go // a representation of the event type
         event-repository/
@@ -30,14 +30,19 @@ cmd/
 
 
 # routes
-"GET", "/v1" -> returns root payload (just a test)
-"GET", "/v1/health-check" -> returns 204
-"GET", "/v1/store/:name" -> returns a file located at /tmp/foo/repos/:name
-"GET", "/v1/stats" -> returns stats
+- "GET", "/v1" -> returns root payload (just a test)
+- "GET", "/v1/health-check" -> returns 204
+- "GET", "/v1/store/:name" -> returns a file located at /tmp/foo/repos/:name
+- "GET", "/v1/stats" -> returns stats
 
 # how to use
 To start server
 
-First install go1.14
-Then, in repo root,
-go run cmd/event-service-api/main.go
+- First install go1.14
+
+Then, in repo root
+Make sure you don't have anything important in /tmp/foo/repos...
+- go run cmd/create-files/main.go 
+- go run cmd/event-service-api/main.go
+
+- hit the server at localhost:3005
